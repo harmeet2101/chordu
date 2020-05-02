@@ -22,6 +22,11 @@ class ChorduApp extends StatelessWidget {
         * */
 
         primaryColor: Color(0xff058377),
+        accentColor: Colors.white,
+        fontFamily: 'Play',
+        textTheme: TextTheme(
+          title: TextStyle(color: Colors.white,fontSize: 22.0),
+        )
       ),
       home: SplashScreenPage(title:AppConstants.APP_NAME),
       routes: <String,WidgetBuilder>{
