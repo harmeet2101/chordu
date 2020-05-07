@@ -1,6 +1,7 @@
 import 'dart:convert';
-
+import 'package:chordu/rest/play.dart';
 import 'package:chordu/rest/playlist.dart';
+import 'package:chordu/rest/track.dart';
 import 'package:chordu/utils/AppConstants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +24,16 @@ class HomeScreenState extends State<HomeScreen> {
   final List<String> items = ['Home','Recently Viewed','Login','Weekly Top','Pop Hotlist'];
   final List<IconData> iconsList = [Icons.home,Icons.history,Icons.person,Icons.music_note,Icons.queue_music];
   Future<PlayList> playList;
-
+  ScrollController _scrollController;
+  List<Play> plays;
   @override
   void initState() {
     super.initState();
+    //_scrollController = new ScrollController();
+    //_scrollController.addListener(scrollListener);
     playList = getData();
+
+
   }
 
   Widget build(BuildContext buildContext){
@@ -59,7 +65,7 @@ class HomeScreenState extends State<HomeScreen> {
                       itemCount: 5),
                 ),
               ) ,
-              body: getCustomScrollView()
+              body: getCustomScrollView(snapshot.data)
           );
         }else
           return Container(
@@ -70,38 +76,6 @@ class HomeScreenState extends State<HomeScreen> {
               new AlwaysStoppedAnimation<Color>(Colors.greenAccent),))
           );
       },
-    );
-
-  }
-
-  Widget appBar(){
-
-    return Container(
-
-      color: Color(0xff058377),
-      width: double.infinity,
-      height: 60,
-      child: Row(
-
-        children: <Widget>[
-
-          InkWell(
-
-            onTap: (){
-    if (_scaffoldKey.currentState.isDrawerOpen == false) {
-    _scaffoldKey.currentState.openDrawer();
-    } else {
-    _scaffoldKey.currentState.openEndDrawer();
-    }
-
-            },
-            child: Container(
-              width: 55,
-              child: Icon(Icons.dehaze,size: 40,),
-            ),
-          )
-        ],
-      ),
     );
 
   }
@@ -134,248 +108,20 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
 
-  Widget ListHeader(){
 
-    return Container(
-
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
-            child: Icon(Icons.track_changes,color: Colors.white,),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 5, 10, 5),
-            child: Text('Weekly Trending Tracks',style: TextStyle(color: Colors.white,fontSize: 18,fontFamily: 'Play'),),
-          ),
-        ],
-      ),
-      decoration: BoxDecoration(
-        color: Color(0xff058377),
-        shape: BoxShape.rectangle,
-        boxShadow: [BoxShadow(
-          color: Colors.grey,
-          blurRadius: 14.0, // soften the shadow
-          spreadRadius: 2.0, //extend the shadow
-
-        )],
-        border: Border.all(
-          color: Colors.white,
-          width: 1.0,
-
-        ),
-          borderRadius: BorderRadius.all(Radius.circular(4.0))
-      ),
-
-    );
-  }
-
-  Widget list01(){
+  Widget list(PlayList playList){
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 300,horizontal: 10),
+      padding: EdgeInsets.fromLTRB(0,250,0,0),
       child: Column(
-
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            color: Colors.transparent,
-            child: Stack(
-
-              children: <Widget>[
-
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(padding: EdgeInsets.symmetric(vertical: 17)
-                    ,child: Container(width: double.infinity,height:400,child: getContainerList(),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                      ),
-                    ),),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: ListHeader(),
-                ),
-                Positioned(
-                  bottom: 6,
-                  right: 10,
-                  child: Container(
-                    width: 100,
-                    height: 24,
-                    child: Center(
-                      child: GestureDetector(
-                        child: Text('view more..'),
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.grey[350],
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(4.0)
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            color: Colors.transparent,
-            child: Stack(
-
-              children: <Widget>[
-
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(padding: EdgeInsets.symmetric(vertical: 17)
-                    ,child: Container(width: double.infinity,height:400,child: getContainerList(),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                      ),
-                    ),),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: ListHeader(),
-                ),
-                Positioned(
-                  bottom: 6,
-                  right: 10,
-                  child: Container(
-                    width: 100,
-                    height: 24,
-                    child: Center(
-                      child: GestureDetector(
-                        child: Text('view more..'),
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.grey[350],
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(4.0)
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            color: Colors.transparent,
-            child: Stack(
-
-              children: <Widget>[
-
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(padding: EdgeInsets.symmetric(vertical: 17)
-                    ,child: Container(width: double.infinity,height:400,child: getContainerList(),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                      ),
-                    ),),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: ListHeader(),
-                ),
-                Positioned(
-                  bottom: 6,
-                  right: 10,
-                  child: Container(
-                    width: 100,
-                    height: 24,
-                    child: Center(
-                      child: GestureDetector(
-                        child: Text('view more..'),
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.grey[350],
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(4.0)
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            color: Colors.transparent,
-            child: Stack(
-
-              children: <Widget>[
-
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(padding: EdgeInsets.symmetric(vertical: 17)
-                    ,child: Container(width: double.infinity,height:400,child: getContainerList(),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                      ),
-                    ),),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: ListHeader(),
-                ),
-                Positioned(
-                  bottom: 6,
-                  right: 10,
-                  child: Container(
-                    width: 100,
-                    height: 24,
-                    child: Center(
-                      child: GestureDetector(
-                        child: Text('view more..'),
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.grey[350],
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(4.0)
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
+        children: getMainContent(playList),
       ),
     );
   }
 
-  Widget getContainerList(){
-
-    final List<String> entries = <String>['A', 'B', 'C','D','E','F','G','H','I','J','K'];
-    return ListView.separated(
-
-        separatorBuilder: (BuildContext context ,int index)=>Divider(color: Colors.black26, thickness: 0.5,),
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: entries.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-
-            color: Colors.white,
-            child: getContainerListItems());
-        },
-    );
-  }
 
 
-  Widget getContainerListItems(){
+  Widget getContainerListItems(String imgUrl,String title,String chords){
 
 
     return Row(
@@ -385,15 +131,18 @@ class HomeScreenState extends State<HomeScreen> {
           flex: 1,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-            child: Container(
+            child: ClipRRect(
+
+              borderRadius: BorderRadius.circular(6.0),
+              child: Container(
 
                 height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),image:
-                DecorationImage(image: AssetImage('assets/images/bg_home_screen_guitar.jpg'),fit: BoxFit.fill)
-                ),
+                child: FadeInImage.assetNetwork(placeholder:'assets/images/bg_home_screen_guitar.jpg'
+                  , image: imgUrl,fit: BoxFit.fill,),
+
               ),
+            ),
+
           ),
 
         ),
@@ -407,12 +156,13 @@ class HomeScreenState extends State<HomeScreen> {
                     children:[
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 0.0),
-                    child: Text('Future - Life Is Good (Official Music Video) ft. Drake',style: TextStyle(color: Colors.black,fontSize: 16),
+                    child: Text(title,style: TextStyle(color: Colors.black,fontSize: 16),
                           maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text('NGm D G# G A# Cm",',style: TextStyle(color: Color(0xff058377),fontSize: 18),maxLines: 1,),
+                    child: Text(chords,style: TextStyle(color: Color(0xff058377),
+                        fontSize: 18),maxLines: 1,overflow: TextOverflow.clip,softWrap: true,),
                   ),
 
                     ],
@@ -425,26 +175,11 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-  Future<PlayList> getData() async{
-
-
-    final resp = await http.get('https://chordu.com/flutter_service_home.php');
-
-    if(resp.statusCode==200){
-
-      return PlayList.fromJson(json.decode(resp.body));
-    }
-    else
-      throw new Exception('error ocurred');
-  }
-
-
-
-  getCustomScrollView() {
+  Widget getCustomScrollView(PlayList playList) {
 
     return CustomScrollView(
 
+      controller: _scrollController,
       slivers: <Widget>[
 
         SliverAppBar(
@@ -477,77 +212,87 @@ class HomeScreenState extends State<HomeScreen> {
 
                 (buildContext,index) =>SingleChildScrollView(
 
-                  child: Container(
-                    color: Colors.grey[200],
-                    child: Stack(
+              child: Container(
+                color: Colors.grey[200],
+                child: Stack(
 
-                      children: <Widget>[
+                  children: <Widget>[
 
 
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.7,
-                          width: double.infinity,
-                          child: Center(
-                            child: Container(
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      width: double.infinity,
+                      child: Center(
+                        child: null,
+                      ),
+                      decoration: BoxDecoration(
 
-                              width: 250,
-                              height: 50,
-                              child: Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(10, 20, 0, 10),
-                                      child: TextFormField(
-                                          maxLines: 1,
-                                          showCursor: false,
-                                          style: TextStyle(color: Colors.white,fontSize: 20,),
+                          image: DecorationImage(image: AssetImage('assets/images/bg_home_screen_guitar.jpg'),fit: BoxFit.fill)
 
-                                          decoration: InputDecoration(
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.symmetric(vertical: 30),child:
+                    Text(AppConstants.HOME_PAGE_DESC_TEXT_0,softWrap: true,style:
+                    TextStyle(fontSize: 28,color: Colors.white,fontFamily: 'Play'),textAlign: TextAlign.center,),),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(padding: EdgeInsets.symmetric(vertical: 160),child:
+                      Container(
 
-                                            hintText: 'Search Music',
-                                            hintStyle: TextStyle(color: Colors.white,fontSize: 20),
-                                            border: InputBorder.none,
+                        width: 300,
+                        height: 50,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
+                                child: TextFormField(
+                                    maxLines: 1,
+                                    showCursor: false,
+                                    style: TextStyle(color: Colors.white,fontSize: 18,),
 
-                                          )
+                                    decoration: InputDecoration(
 
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 0.5,height: 50,
-                                    color: Colors.white,
-                                  ),
-                                  Padding(padding: EdgeInsets.fromLTRB(10, 10, 10, 10)
-                                    ,child:             InkWell(
+                                      hintText: AppConstants.HOME_PAGE_SEARCH_BAR_TEXT,
+                                      hintStyle: TextStyle(color: Colors.grey[600],fontSize: 16),
+                                      border: InputBorder.none,
 
-                                      onTap: (){
+                                    )
 
-                                      },
-                                      child: Container(
-
-                                        child: Icon(Icons.search,size: 30,),
-                                      ),
-                                    ), )
-                                ],
-                              ),
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.all(Radius.circular(12.0))
+                                ),
                               ),
                             ),
-                          ),
-                          decoration: BoxDecoration(
+                            Container(
+                              width: 0.5,height: 60,
+                              color: Colors.grey[600],
+                            ),
+                            Padding(padding: EdgeInsets.fromLTRB(10, 10, 10, 10)
+                              ,child:             InkWell(
 
-                              image: DecorationImage(image: AssetImage('assets/images/bg_home_screen_guitar.jpg'),fit: BoxFit.fill)
+                                onTap: (){
 
-                          ),
+                                },
+                                child: Container(
+
+                                  child: Icon(Icons.search,size: 35,color: Colors.grey[600],),
+                                ),
+                              ), )
+                          ],
                         ),
-                        list01()
-                      ],
+                        decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.all(Radius.circular(12.0))
+                        ),
+                      ),),
                     ),
-                  ),
-                )
+                    list(playList)
+
+
+                  ],
+                ),
+              ),
+            )
             ,childCount: 1
 
         ))
@@ -555,6 +300,204 @@ class HomeScreenState extends State<HomeScreen> {
       ],
 
     );
+  }
+
+
+
+
+
+
+  Future<PlayList> getData() async{
+
+
+    final resp = await http.get('https://chordu.com/flutter_service_home.php');
+
+    if(resp.statusCode==200){
+
+      return PlayList.fromJson(json.decode(resp.body));
+    }
+    else
+      throw new Exception('error ocurred');
+  }
+
+   List<Widget> getMainContent(PlayList playList){
+
+    List<Widget> wl = new List();
+
+    for(int i =0;i<playList.plays.length;i++){
+
+      wl.add(getContainer(playList.plays[i].name,playList.plays[i].trackList, 5));
+    }
+    wl.add(bottomPageDescription());
+    return wl;
+  }
+
+  Widget getContainer(String title,List<Track> trackList,int size){
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10,0,10,10),
+      child: Container(
+        width: double.infinity,
+        color: Colors.transparent,
+        child: Stack(
+
+          children: <Widget>[
+
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(padding: EdgeInsets.symmetric(vertical: 17)
+                ,child: Container(width: double.infinity,child:
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
+                  child: Column(
+
+                    children: containerItems(trackList,size),
+
+                  ),
+                ) ,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                  ),
+                ),),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: containerHeader(title),
+            ),
+            Positioned(
+              bottom: 6,
+              right: 10,
+              child: Container(
+                width: 120,
+                height: 30,
+                child: Center(
+                  child: GestureDetector(
+                    child: Text('view more..',style: TextStyle(fontFamily: 'Play',fontSize: 16),),
+                  ),
+                ),
+                decoration: BoxDecoration(
+                    color: Colors.grey[350],
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(4.0)
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget containerHeader(String title){
+
+    return Container(
+
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+            child: Icon(Icons.check_circle,color: Colors.white,),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 10, 5),
+            child: Text(title,style: TextStyle(color: Colors.white,fontSize: 18,fontFamily: 'Play'),),
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+          color: Color(0xff058377),
+          shape: BoxShape.rectangle,
+          boxShadow: [BoxShadow(
+            color: Colors.grey,
+            blurRadius: 14.0, // soften the shadow
+            spreadRadius: 2.0, //extend the shadow
+
+          )],
+          border: Border.all(
+            color: Colors.white,
+            width: 1.0,
+
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(4.0))
+      ),
+
+    );
+  }
+
+  Widget bottomPageDescription(){
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0,20,0,0),
+      child: Container(
+
+        color: Colors.black54,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+
+            Padding(padding: EdgeInsets.symmetric(vertical: 10),
+              child: Text(AppConstants.HOME_PAGE_DESC_TEXT_1,style: TextStyle(color: Colors.greenAccent,fontSize: 16),),),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+
+                  Text(AppConstants.HOME_PAGE_DESC_TEXT_2,style: TextStyle(color: Colors.blueAccent,fontSize: 14),),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 10),child:
+                  Text(AppConstants.HOME_PAGE_DESC_TEXT_3,style: TextStyle(color: Colors.blueAccent,fontSize: 14),),)
+                ],
+              ),
+            ),
+            Padding(padding: EdgeInsets.symmetric(vertical: 10.0),child:
+            Text(AppConstants.HOME_PAGE_DESC_TEXT_4,style: TextStyle(color: Colors.orangeAccent,fontSize: 14),),),
+            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 10),child:
+            Text(AppConstants.HOME_PAGE_DESC_TEXT_5,textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white54,fontSize: 14,height: 1.5),)
+              ,)
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> containerItems(List<Track> trackList,int size){
+
+    List<Widget> wl = new List();
+
+    for(int i =0;i<size;i++){
+      wl.add(Container(
+          height: 110,
+          color: Colors.white,
+          child: getContainerListItems(trackList[i].img,trackList[i].t,trackList[i].chords.join(" "))));
+    }
+
+    return wl;
+  }
+
+    scrollListener() {
+
+    if(_scrollController.offset>=_scrollController.position.maxScrollExtent
+        &&!_scrollController.position.outOfRange){
+        setState(() {
+          print("Bottom");
+        });
+    }if(
+    _scrollController.offset <= _scrollController.position.maxScrollExtent
+        &&!_scrollController.position.outOfRange
+    ){
+      setState(() {
+        print("top");
+      });
+    }
   }
 }
 
