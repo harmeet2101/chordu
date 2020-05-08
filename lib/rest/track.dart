@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class Track{
 
@@ -20,7 +19,7 @@ class Track{
         img: json['img'],
         t: json['t'],
         duration: json['dur'],
-        chords: new List<String>.from(json['chords'])
+        chords: json['chords']!=null?new List<String>.from(json['chords']):new List()
     );
   }
 
