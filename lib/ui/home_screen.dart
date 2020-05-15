@@ -3,6 +3,9 @@ import 'package:chordu/rest/category_playlist.dart';
 import 'package:chordu/rest/play.dart';
 import 'package:chordu/rest/playlist.dart';
 import 'package:chordu/rest/track.dart';
+import 'package:chordu/rest/youtube/item.dart';
+import 'package:chordu/rest/youtube/youtube_search_response.dart';
+import 'package:chordu/ui/player_screen.dart';
 import 'package:chordu/utils/AppConstants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +29,10 @@ class HomeScreenState extends State<HomeScreen> {
   Future<PlayList> playList;
   Future<CategoryPlayList> categoryPlayList;
   ScrollController _scrollController;
+  TextEditingController _searchController = new TextEditingController();
   List<Play> plays;
   bool showCompleteList = false;
+  bool showSearchList = false;
   int selectionIndex = -1;
 
   @override
@@ -44,11 +49,17 @@ class HomeScreenState extends State<HomeScreen> {
 
       onWillPop: ()async{
 
-        if(showCompleteList){
-
+        if(showCompleteList) {
           setState(() {
             showCompleteList = false;
           });
+          return false;
+        }
+        if(showSearchList){
+
+            setState(() {
+              showSearchList = false;
+            });
           return false;
         }else
           return true;
@@ -134,7 +145,7 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget getContainerListItems(String duration,String imgUrl,String title,String chords){
+  Widget getContainerListItems(String duration,String imgUrl,String title,String chords,String id){
 
 
     return GestureDetector(
@@ -206,7 +217,9 @@ class HomeScreenState extends State<HomeScreen> {
         ],
       ),
       onTap: (){
-
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+            PlayerScreen(videoId:id
+              ,thumbnailUrl: imgUrl,title: title,)));
       },
     );
   }
@@ -245,7 +258,8 @@ class HomeScreenState extends State<HomeScreen> {
           ],
         )
         ,abstractListOfSongs(playList),
-        completeListOfSongs(playList)
+        completeListOfSongs(playList),
+        searchListOfSongs(_searchController.text.trim())
 
 
       ],
@@ -266,13 +280,15 @@ class HomeScreenState extends State<HomeScreen> {
       throw new Exception('error ocurred');
   }
 
+
+
   List<Widget> getMainContent(PlayList playList){
 
     List<Widget> wl = new List();
 
     for(int i =0;i<playList.plays.length;i++){
 
-      wl.add(getContainer(i,playList.plays[i].name,playList.plays[i].trackList, 5));
+      wl.add(getContainer(i,playList.plays[i].name,playList.plays[i].trackList, 4));
     }
     wl.add(bottomPageDescription());
     return wl;
@@ -430,7 +446,8 @@ class HomeScreenState extends State<HomeScreen> {
       wl.add(Container(
           height: 110,
           color: Colors.white,
-          child: getContainerListItems(trackList[i].duration,trackList[i].img,trackList[i].t,trackList[i].chords.join(" "))));
+          child: getContainerListItems(trackList[i].duration,trackList[i].img,
+              trackList[i].t,trackList[i].chords.join(" "),trackList[i].id)));
     }
 
     return wl;
@@ -441,8 +458,13 @@ class HomeScreenState extends State<HomeScreen> {
     SliverList(delegate: new SliverChildListDelegate(new List(0)));
   }
 
+  Widget searchListOfSongs(String searchString){
+    return showSearchList?SearchBuilder(search: searchString):
+    SliverList(delegate: new SliverChildListDelegate(new List(0)));
+  }
+
   Widget abstractListOfSongs(PlayList playList){
-    return !showCompleteList?SliverList(delegate: SliverChildBuilderDelegate(
+    return (!showCompleteList && !showSearchList)?SliverList(delegate: SliverChildBuilderDelegate(
 
 
     (buildContext,index) =>SingleChildScrollView(
@@ -483,9 +505,9 @@ class HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
                         child: TextFormField(
                             maxLines: 1,
-                            showCursor: false,
-                            style: TextStyle(color: Colors.white,fontSize: 18,),
-
+                            showCursor: true,
+                            style: TextStyle(color: Colors.black,fontSize: 18,),
+                            controller: _searchController,
                             decoration: InputDecoration(
 
                               hintText: AppConstants.HOME_PAGE_SEARCH_BAR_TEXT,
@@ -505,7 +527,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ,child:             InkWell(
 
                         onTap: (){
-
+                          showSearchPage();
                         },
                         child: Container(
 
@@ -552,6 +574,19 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void showSearchPage() {
+
+    if(_searchController.text.trim().isEmpty){
+      return;
+    }
+    setState(() {
+
+      showSearchList = true;
+      showCompleteList = false;
+    });
+
+  }
+
 }
 
 class CategoryBuilder extends StatefulWidget{
@@ -595,9 +630,9 @@ class CategoryBuilderState extends State<CategoryBuilder>{
 
           wl.add(getContainerListItems(snapshot.data.trackList[i].duration,
               snapshot.data.trackList[i].img,snapshot.data.trackList[i].t,
-              snapshot.data.trackList[i].chords.join(" ")));
+              snapshot.data.trackList[i].chords.join(" "),snapshot.data.trackList[i].id));
         }
-
+        wl.add(bottomPageDescription());
         return SliverList(delegate:new SliverChildListDelegate(wl),);
       }
       else{
@@ -606,7 +641,7 @@ class CategoryBuilderState extends State<CategoryBuilder>{
     },future: categoryPlayList,);
   }
 
-  Widget getContainerListItems(String duration,String imgUrl,String title,String chords){
+  Widget getContainerListItems(String duration,String imgUrl,String title,String chords,String id){
 
 
     return GestureDetector(
@@ -614,7 +649,7 @@ class CategoryBuilderState extends State<CategoryBuilder>{
 
         children: <Widget>[
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
               child: ClipRRect(
@@ -651,7 +686,7 @@ class CategoryBuilderState extends State<CategoryBuilder>{
 
           ),
           Expanded(
-            flex: 1,
+            flex: 3,
             child:Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 10, 20),
               child: Container(
@@ -660,7 +695,209 @@ class CategoryBuilderState extends State<CategoryBuilder>{
                   children:[
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 0.0),
-                      child: Text(title,style: TextStyle(color: Colors.black,fontSize: 16),
+                      child: Text(title,style: TextStyle(color: Colors.black,fontSize: 18),
+                        maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(chords,style: TextStyle(color: Color(0xff058377),
+                          fontSize: 18),maxLines: 1,overflow: TextOverflow.clip,softWrap: true,),
+                    ),
+
+                  ],
+                ),
+
+              ),
+            ),
+          ),
+        ],
+      ),
+      onTap: (){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+            PlayerScreen(videoId:id
+              ,thumbnailUrl: imgUrl,title: title,),
+        ));
+      },
+    );
+  }
+
+  Widget getHeading(){
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Row(
+
+        children: <Widget>[
+
+          Padding(padding: EdgeInsets.fromLTRB(10, 0, 10, 0),child: Icon(Icons.check_circle,
+            color: Color(0xff058377),size: 40,),),
+          Text(widget.category,style: TextStyle(color: Colors.black,fontSize: 25,fontFamily: 'Play'),)
+        ],
+      ),
+    );
+  }
+  Widget bottomPageDescription(){
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0,20,0,0),
+      child: Container(
+
+        color: Colors.black54,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+
+            Padding(padding: EdgeInsets.symmetric(vertical: 10),
+              child: Text(AppConstants.HOME_PAGE_DESC_TEXT_1,style: TextStyle(color: Colors.greenAccent,fontSize: 16),),),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+
+                  Text(AppConstants.HOME_PAGE_DESC_TEXT_2,style: TextStyle(color: Colors.blueAccent,fontSize: 14),),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 10),child:
+                  Text(AppConstants.HOME_PAGE_DESC_TEXT_3,style: TextStyle(color: Colors.blueAccent,fontSize: 14),),)
+                ],
+              ),
+            ),
+            Padding(padding: EdgeInsets.symmetric(vertical: 10.0),child:
+            Text(AppConstants.HOME_PAGE_DESC_TEXT_4,style: TextStyle(color: Colors.orangeAccent,fontSize: 14),),),
+            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 10),child:
+            Text(AppConstants.HOME_PAGE_DESC_TEXT_5,textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white54,fontSize: 14,height: 1.5),)
+              ,)
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<CategoryPlayList> getCategoryData(String category) async{
+
+
+    final resp = await http.get('https://chordu.com/flutter_service_playlist.php?listid=$category');
+
+    if(resp.statusCode==200){
+
+      return CategoryPlayList.fromJson(json.decode(resp.body));
+    }
+    else
+      throw new Exception('error ocurred');
+  }
+}
+
+class SearchBuilder extends StatefulWidget{
+
+  String search;
+
+  SearchBuilder({this.search});
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return SearchBuilderState();
+  }
+}
+
+class SearchBuilderState extends State<SearchBuilder>{
+
+  Future<YoutubeSearchResponse> _searchResponse;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _searchResponse = fetchSongs(widget.search);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return FutureBuilder(builder: (context,AsyncSnapshot<YoutubeSearchResponse> snapshot){
+
+      if(snapshot.connectionState==ConnectionState.none &&
+          snapshot.hasData ==null
+      ){
+        return SliverList(delegate: new SliverChildListDelegate(new List(0)));
+      }else if(snapshot.hasData){
+        List<Widget> wl = new List();
+
+        wl.add(getHeading());
+        for(int i =0;i<snapshot.data.items.length;i++){
+
+          wl.add(getContainerListItems('0.0',
+              snapshot.data.items[i].snippet.thumbnails.high.url,
+              snapshot.data.items[i].snippet.title,'Request Chords',snapshot.data.items[i]));
+        }
+        wl.add(bottomPageDescription());
+
+        return SliverList(delegate:new SliverChildListDelegate(wl),);
+      }
+      else{
+        return SliverList(delegate: new SliverChildListDelegate(new List(0)));
+      }
+    },future: _searchResponse,);
+  }
+
+  Widget getContainerListItems(String duration,String imgUrl,String title,String chords,Item item){
+
+
+    return GestureDetector(
+      child: Row(
+
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+              child: ClipRRect(
+
+                borderRadius: BorderRadius.circular(6.0),
+                child: Stack(
+                  children: <Widget>[
+
+                    Container(
+                      width: double.infinity,
+                      height: 80,
+                      child: FadeInImage.assetNetwork(placeholder:'assets/images/bg_home_screen_guitar.jpg'
+                        , image: imgUrl,fit: BoxFit.fill,),
+
+                    )
+                    ,Positioned(child: Container(
+
+                      decoration: BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(8.0)
+                      ),
+
+                      child: Center(child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                        child: Text(duration,style: TextStyle(color: Colors.white,fontSize: 15),),
+                      )),
+                    ),left: 5,bottom: 5,)
+                  ] ,
+                ),
+              ),
+
+            ),
+
+          ),
+          Expanded(
+            flex: 3,
+            child:Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 10, 20),
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 0.0),
+                      child: Text(title,style: TextStyle(color: Colors.black,fontSize: 18),
                         maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
                     ),
                     Padding(
@@ -679,6 +916,11 @@ class CategoryBuilderState extends State<CategoryBuilder>{
       ),
       onTap: (){
 
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+            PlayerScreen(videoId:item.itemId.videoId
+              ,thumbnailUrl: item.snippet.thumbnails.default_.url,title: title,),
+        ));
+
       },
     );
   }
@@ -691,25 +933,70 @@ class CategoryBuilderState extends State<CategoryBuilder>{
 
         children: <Widget>[
 
-          Padding(padding: EdgeInsets.fromLTRB(10, 0, 10, 0),child: Icon(Icons.check_circle,
+          Padding(padding: EdgeInsets.fromLTRB(10, 0, 10, 0),child: Icon(Icons.search,
             color: Color(0xff058377),size: 40,),),
-          Text(widget.category,style: TextStyle(color: Colors.black,fontSize: 20,fontFamily: 'Play'),)
+          Text('Search Results: ${widget.search}',style: TextStyle(color: Colors.black,fontSize: 25,fontFamily: 'Play',),maxLines: 2,softWrap: true,)
         ],
       ),
     );
   }
+  Widget bottomPageDescription(){
 
-  Future<CategoryPlayList> getCategoryData(String category) async{
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0,20,0,0),
+      child: Container(
 
+        color: Colors.black54,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
 
-    final resp = await http.get('https://chordu.com/flutter_service_playlist.php?listid=$category');
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+
+            Padding(padding: EdgeInsets.symmetric(vertical: 10),
+              child: Text(AppConstants.HOME_PAGE_DESC_TEXT_1,style: TextStyle(color: Colors.greenAccent,fontSize: 16),),),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+
+                  Text(AppConstants.HOME_PAGE_DESC_TEXT_2,style: TextStyle(color: Colors.blueAccent,fontSize: 14),),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 10),child:
+                  Text(AppConstants.HOME_PAGE_DESC_TEXT_3,style: TextStyle(color: Colors.blueAccent,fontSize: 14),),)
+                ],
+              ),
+            ),
+            Padding(padding: EdgeInsets.symmetric(vertical: 10.0),child:
+            Text(AppConstants.HOME_PAGE_DESC_TEXT_4,style: TextStyle(color: Colors.orangeAccent,fontSize: 14),),),
+            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 10),child:
+            Text(AppConstants.HOME_PAGE_DESC_TEXT_5,textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white54,fontSize: 14,height: 1.5),)
+              ,)
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<YoutubeSearchResponse> fetchSongs(String searchString)async {
+
+    if(searchString.isEmpty){
+      return null;
+    }
+    var resp = await http.get('https://www.googleapis.com/youtube/v3/search?'
+        'part=snippet&maxResults=50&q=$searchString&key=${AppConstants.YOUTUBE_PLAYER_API_KEY}');
 
     if(resp.statusCode==200){
 
-      return CategoryPlayList.fromJson(json.decode(resp.body));
+      YoutubeSearchResponse response = YoutubeSearchResponse.fromJson(json.decode(resp.body));
+      print(response);
+      return response;
     }
     else
       throw new Exception('error ocurred');
+
   }
 }
 
