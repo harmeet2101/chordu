@@ -260,8 +260,6 @@ class HomeScreenState extends State<HomeScreen> {
         ,abstractListOfSongs(playList),
         completeListOfSongs(playList),
         searchListOfSongs(_searchController.text.trim())
-
-
       ],
 
     );
@@ -288,7 +286,7 @@ class HomeScreenState extends State<HomeScreen> {
 
     for(int i =0;i<playList.plays.length;i++){
 
-      wl.add(getContainer(i,playList.plays[i].name,playList.plays[i].trackList, 4));
+      wl.add(getContainer(i,playList.plays[i].name,playList.plays[i].trackList, 3));
     }
     wl.add(bottomPageDescription());
     return wl;
@@ -462,6 +460,8 @@ class HomeScreenState extends State<HomeScreen> {
     return showSearchList?SearchBuilder(search: searchString):
     SliverList(delegate: new SliverChildListDelegate(new List(0)));
   }
+
+
 
   Widget abstractListOfSongs(PlayList playList){
     return (!showCompleteList && !showSearchList)?SliverList(delegate: SliverChildBuilderDelegate(
@@ -717,6 +717,7 @@ class CategoryBuilderState extends State<CategoryBuilder>{
             PlayerScreen(videoId:id
               ,thumbnailUrl: imgUrl,title: title,),
         ));
+
       },
     );
   }

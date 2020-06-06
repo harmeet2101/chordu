@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:chordu/ui/home_screen.dart';
 import 'package:chordu/utils/AppConstants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 void main() => runApp(ChorduApp());
 
@@ -49,40 +50,39 @@ class SplashScreenPage extends StatefulWidget {
 
 class _SplashScreenPageState extends State<SplashScreenPage> {
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    startDelay();
+   startDelay();
   }
   @override
   Widget build(BuildContext context) {
 
-    return Container(
+    return Scaffold(
+      body: Container(
 
-      color: Color(0xff093431),
-      child: Stack(
-      children: <Widget>[
-          Center(child: Column(
+        color: Color(0xff093431),
+        child: Stack(
+        children: <Widget>[
+            Center(child: Column(
 
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image.asset('assets/images/splash_icon.png',),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(widget.title,style: TextStyle(color: Colors.white,fontSize: 20.0,
-                    decoration: TextDecoration.none),),
-              ),
-            ],
-          )),
-          Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.greenAccent),))
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset('assets/images/splash_icon.png',),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(widget.title,style: TextStyle(color: Colors.white,fontSize: 20.0,
+                      decoration: TextDecoration.none),),
+                ),
+              ],
+            )),
+            Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.greenAccent),))
 
-      ],
+        ],),
       ),
     );
   }
-
 
 
   startDelay()async{
