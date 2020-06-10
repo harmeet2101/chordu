@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chordu/ui/home_screen.dart';
 import 'package:chordu/utils/AppConstants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -48,13 +49,13 @@ class SplashScreenPage extends StatefulWidget {
   _SplashScreenPageState createState() => _SplashScreenPageState();
 }
 
-class _SplashScreenPageState extends State<SplashScreenPage> {
+class _SplashScreenPageState extends State<SplashScreenPage>   {
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-   startDelay();
+    startDelay();
   }
   @override
   Widget build(BuildContext context) {
@@ -77,8 +78,8 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                 ),
               ],
             )),
-            Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.greenAccent),))
-
+            Center(child: CircularProgressIndicator(valueColor:
+            new AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),))
         ],),
       ),
     );

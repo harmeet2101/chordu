@@ -6,12 +6,15 @@ import 'package:chordu/rest/track.dart';
 import 'package:chordu/rest/youtube/item.dart';
 import 'package:chordu/rest/youtube/youtube_search_response.dart';
 import 'package:chordu/ui/player_screen.dart';
+import 'package:chordu/ui/progressbars/spin_fade_circle_view.dart';
 import 'package:chordu/utils/AppConstants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+
+import 'chord_app_details.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -99,8 +102,7 @@ class HomeScreenState extends State<HomeScreen> {
                 color: Colors.white,
                 width: double.infinity,
                 height: double.infinity,
-                child: Center(child: new CircularProgressIndicator(valueColor:
-                new AlwaysStoppedAnimation<Color>(Colors.greenAccent),))
+                child: Center(child: SpinFadingCircle(color: Color(0xff058377)))
             );
         },
       ),
@@ -165,7 +167,7 @@ class HomeScreenState extends State<HomeScreen> {
                     Container(
                       width: double.infinity,
                       height: 80,
-                      child: FadeInImage.assetNetwork(placeholder:'assets/images/bg_home_screen_guitar.jpg'
+                      child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
                         , image: imgUrl,fit: BoxFit.fill,),
 
                     )
@@ -232,7 +234,18 @@ class HomeScreenState extends State<HomeScreen> {
       slivers: <Widget>[
 
         SliverAppBar(
-          title: Text(AppConstants.APP_NAME),
+          flexibleSpace: Container(
+            child: FlexibleSpaceBar(
+              title: Text(AppConstants.APP_NAME),
+            ),
+           decoration: BoxDecoration(
+
+             gradient: LinearGradient(colors: [Color(0xff0D4947),Colors.black87],stops: [0.4,1],
+                 begin:Alignment.topLeft,end: Alignment.bottomLeft
+             ),
+           ),
+          ),
+       //   title: Text(AppConstants.APP_NAME),
           leading: IconButton(icon: Icon(Icons.dehaze), onPressed:(){
 
             if (_scaffoldKey.currentState.isDrawerOpen == false) {
@@ -272,6 +285,7 @@ class HomeScreenState extends State<HomeScreen> {
 
     if(resp.statusCode==200){
 
+     // print(json.decode(resp.body));
       return PlayList.fromJson(json.decode(resp.body));
     }
     else
@@ -288,7 +302,7 @@ class HomeScreenState extends State<HomeScreen> {
 
       wl.add(getContainer(i,playList.plays[i].name,playList.plays[i].trackList, 3));
     }
-    wl.add(bottomPageDescription());
+    wl.add(ChorduAppDetails());
     return wl;
   }
 
@@ -396,45 +410,6 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget bottomPageDescription(){
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0,20,0,0),
-      child: Container(
-
-        color: Colors.black54,
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-
-            Padding(padding: EdgeInsets.symmetric(vertical: 10),
-              child: Text(AppConstants.HOME_PAGE_DESC_TEXT_1,style: TextStyle(color: Colors.greenAccent,fontSize: 16),),),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-
-                  Text(AppConstants.HOME_PAGE_DESC_TEXT_2,style: TextStyle(color: Colors.blueAccent,fontSize: 14),),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 10),child:
-                  Text(AppConstants.HOME_PAGE_DESC_TEXT_3,style: TextStyle(color: Colors.blueAccent,fontSize: 14),),)
-                ],
-              ),
-            ),
-            Padding(padding: EdgeInsets.symmetric(vertical: 10.0),child:
-            Text(AppConstants.HOME_PAGE_DESC_TEXT_4,style: TextStyle(color: Colors.orangeAccent,fontSize: 14),),),
-            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 10),child:
-            Text(AppConstants.HOME_PAGE_DESC_TEXT_5,textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white54,fontSize: 14,height: 1.5),)
-              ,)
-
-          ],
-        ),
-      ),
-    );
-  }
 
   List<Widget> containerItems(List<Track> trackList,int size){
 
@@ -511,7 +486,7 @@ class HomeScreenState extends State<HomeScreen> {
                             decoration: InputDecoration(
 
                               hintText: AppConstants.HOME_PAGE_SEARCH_BAR_TEXT,
-                              hintStyle: TextStyle(color: Colors.grey[600],fontSize: 16),
+                              hintStyle: TextStyle(color: Color(0xff989898),fontSize: 16),
                               border: InputBorder.none,
 
                             )
@@ -531,14 +506,14 @@ class HomeScreenState extends State<HomeScreen> {
                         },
                         child: Container(
 
-                          child: Icon(Icons.search,size: 35,color: Colors.grey[600],),
+                          child: Icon(Icons.search,size: 35,color: Color(0xff8D9AA5),),
                         ),
                       ), )
                   ],
                 ),
                 decoration: BoxDecoration(
                     shape: BoxShape.rectangle,
-                    color: Colors.grey[200],
+                    color: Color(0xffEAEAEA),
                     borderRadius: BorderRadius.all(Radius.circular(12.0))
                 ),
               ),),
@@ -661,7 +636,7 @@ class CategoryBuilderState extends State<CategoryBuilder>{
                     Container(
                       width: double.infinity,
                       height: 80,
-                      child: FadeInImage.assetNetwork(placeholder:'assets/images/bg_home_screen_guitar.jpg'
+                      child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
                         , image: imgUrl,fit: BoxFit.fill,),
 
                     )
@@ -864,7 +839,7 @@ class SearchBuilderState extends State<SearchBuilder>{
                     Container(
                       width: double.infinity,
                       height: 80,
-                      child: FadeInImage.assetNetwork(placeholder:'assets/images/bg_home_screen_guitar.jpg'
+                      child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
                         , image: imgUrl,fit: BoxFit.fill,),
 
                     )
