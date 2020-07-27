@@ -5,8 +5,10 @@ import 'package:chordu/rest/playlist.dart';
 import 'package:chordu/rest/track.dart';
 import 'package:chordu/rest/youtube/item.dart';
 import 'package:chordu/rest/youtube/youtube_search_response.dart';
+//import 'package:chordu/ui/custom_player_screen.dart';
 import 'package:chordu/ui/player_screen.dart';
 import 'package:chordu/ui/progressbars/spin_fade_circle_view.dart';
+import 'package:chordu/ui/youtube/yt_player_screen.dart';
 import 'package:chordu/utils/AppConstants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,7 @@ class HomeScreenState extends State<HomeScreen> {
   bool showCompleteList = false;
   bool showSearchList = false;
   int selectionIndex = -1;
+  //InterstitialAd _interstitialAd;
 
   @override
   void initState() {
@@ -44,7 +47,13 @@ class HomeScreenState extends State<HomeScreen> {
     _scrollController = new ScrollController();
     _scrollController.addListener(scrollListener);
     playList = getData();
+
+    //FirebaseAdMob.instance.initialize(appId: 'ca-app-pub-8165933075459073~7203682616');
+   // _interstitialAd = createInterstitialAd()..load();
   }
+
+
+
 
   Widget build(BuildContext buildContext){
 
@@ -150,79 +159,84 @@ class HomeScreenState extends State<HomeScreen> {
   Widget getContainerListItems(String duration,String imgUrl,String title,String chords,String id){
 
 
-    return GestureDetector(
-      child: Row(
+    return Material(
+      child: InkWell(
+        child: Row(
 
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-              child: ClipRRect(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                  child: ClipRRect(
 
-                borderRadius: BorderRadius.circular(6.0),
-                child: Stack(
-                  children: <Widget>[
+                    borderRadius: BorderRadius.circular(6.0),
+                    child: Stack(
+                      children: <Widget>[
 
-                    Container(
-                      width: double.infinity,
-                      height: 80,
-                      child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
-                        , image: imgUrl,fit: BoxFit.fill,),
+                        Container(
+                          width: double.infinity,
+                          height: 80,
+                          child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
+                            , image: imgUrl,fit: BoxFit.fill,),
 
-                    )
-                    ,Positioned(child: Container(
+                        )
+                        ,Positioned(child: Container(
 
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.circular(8.0)
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(8.0)
+                        ),
+
+                          child: Center(child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                            child: Text(duration,style: TextStyle(color: Colors.white,fontSize: 15),),
+                          )),
+                        ),left: 5,bottom: 5,)
+                      ] ,
                     ),
+                  ),
 
-                      child: Center(child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
-                        child: Text(duration,style: TextStyle(color: Colors.white,fontSize: 15),),
-                      )),
-                    ),left: 5,bottom: 5,)
-                  ] ,
+                ),
+
+              ),
+              Expanded(
+                flex: 1,
+                child:Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 8, 10, 20),
+                  child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                          children:[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 0.0),
+                          child: Text(title,style: TextStyle(color: Colors.black,fontSize: 16),
+                                maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(chords,style: TextStyle(color: Color(0xff058377),
+                              fontSize: 18),maxLines: 1,overflow: TextOverflow.clip,softWrap: true,),
+                        ),
+
+                          ],
+                        ),
+
+                    ),
                 ),
               ),
-
-            ),
-
+            ],
           ),
-          Expanded(
-            flex: 1,
-            child:Padding(
-              padding: const EdgeInsets.fromLTRB(0, 8, 10, 20),
-              child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                      children:[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 0.0),
-                      child: Text(title,style: TextStyle(color: Colors.black,fontSize: 16),
-                            maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(chords,style: TextStyle(color: Color(0xff058377),
-                          fontSize: 18),maxLines: 1,overflow: TextOverflow.clip,softWrap: true,),
-                    ),
-
-                      ],
-                    ),
-
-                ),
-            ),
-          ),
-        ],
+          onTap: (){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                PlayerScreen(videoId:id
+                  ,thumbnailUrl: imgUrl,title: title,)
+            /*YTPlayerScreen(videoId: id,thumbnailUrl: imgUrl,songTitle: title,)*/
+                ));
+          }
       ),
-      onTap: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-            PlayerScreen(videoId:id
-              ,thumbnailUrl: imgUrl,title: title,)));
-      },
+
     );
   }
 
@@ -562,6 +576,33 @@ class HomeScreenState extends State<HomeScreen> {
 
   }
 
+  /*MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    keywords: <String>['flutterio', 'beautiful apps'],
+    contentUrl: 'https://flutter.io',
+    birthday: DateTime.now(),
+    childDirected: false,
+    designedForFamilies: false,
+    gender: MobileAdGender.male, // or MobileAdGender.female, MobileAdGender.unknown
+    testDevices: <String>[], // Android emulators are considered test devices
+  );
+
+  InterstitialAd createInterstitialAd() {
+    return InterstitialAd(
+      adUnitId: 'ca-app-pub-8165933075459073/1951355930',
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("InterstitialAd event $event");
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _interstitialAd.dispose();
+    super.dispose();
+  }*/
+
+
 }
 
 class CategoryBuilder extends StatefulWidget{
@@ -619,81 +660,83 @@ class CategoryBuilderState extends State<CategoryBuilder>{
   Widget getContainerListItems(String duration,String imgUrl,String title,String chords,String id){
 
 
-    return GestureDetector(
-      child: Row(
+    return Material(
+      child: InkWell(
+        child: Row(
 
-        children: <Widget>[
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-              child: ClipRRect(
+          children: <Widget>[
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                child: ClipRRect(
 
-                borderRadius: BorderRadius.circular(6.0),
-                child: Stack(
-                  children: <Widget>[
+                  borderRadius: BorderRadius.circular(6.0),
+                  child: Stack(
+                    children: <Widget>[
 
-                    Container(
-                      width: double.infinity,
-                      height: 80,
-                      child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
-                        , image: imgUrl,fit: BoxFit.fill,),
+                      Container(
+                        width: double.infinity,
+                        height: 80,
+                        child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
+                          , image: imgUrl,fit: BoxFit.fill,),
 
-                    )
-                    ,Positioned(child: Container(
+                      )
+                      ,Positioned(child: Container(
 
-                      decoration: BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(8.0)
+                        decoration: BoxDecoration(
+                            color: Colors.black54,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(8.0)
+                        ),
+
+                        child: Center(child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                          child: Text(duration,style: TextStyle(color: Colors.white,fontSize: 15),),
+                        )),
+                      ),left: 5,bottom: 5,)
+                    ] ,
+                  ),
+                ),
+
+              ),
+
+            ),
+            Expanded(
+              flex: 3,
+              child:Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 10, 20),
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0.0),
+                        child: Text(title,style: TextStyle(color: Colors.black,fontSize: 18),
+                          maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(chords,style: TextStyle(color: Color(0xff058377),
+                            fontSize: 18),maxLines: 1,overflow: TextOverflow.clip,softWrap: true,),
                       ),
 
-                      child: Center(child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
-                        child: Text(duration,style: TextStyle(color: Colors.white,fontSize: 15),),
-                      )),
-                    ),left: 5,bottom: 5,)
-                  ] ,
+                    ],
+                  ),
+
                 ),
               ),
-
             ),
+          ],
+        ),
+        onTap: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+              PlayerScreen(videoId:id
+                ,thumbnailUrl: imgUrl,title: title,),
+          ));
 
-          ),
-          Expanded(
-            flex: 3,
-            child:Padding(
-              padding: const EdgeInsets.fromLTRB(0, 8, 10, 20),
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children:[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 0.0),
-                      child: Text(title,style: TextStyle(color: Colors.black,fontSize: 18),
-                        maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(chords,style: TextStyle(color: Color(0xff058377),
-                          fontSize: 18),maxLines: 1,overflow: TextOverflow.clip,softWrap: true,),
-                    ),
-
-                  ],
-                ),
-
-              ),
-            ),
-          ),
-        ],
+        },
       ),
-      onTap: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-            PlayerScreen(videoId:id
-              ,thumbnailUrl: imgUrl,title: title,),
-        ));
-
-      },
     );
   }
 
@@ -822,82 +865,84 @@ class SearchBuilderState extends State<SearchBuilder>{
   Widget getContainerListItems(String duration,String imgUrl,String title,String chords,Item item){
 
 
-    return GestureDetector(
-      child: Row(
+    return Material(
+      child: InkWell(
+        child: Row(
 
-        children: <Widget>[
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-              child: ClipRRect(
+          children: <Widget>[
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                child: ClipRRect(
 
-                borderRadius: BorderRadius.circular(6.0),
-                child: Stack(
-                  children: <Widget>[
+                  borderRadius: BorderRadius.circular(6.0),
+                  child: Stack(
+                    children: <Widget>[
 
-                    Container(
-                      width: double.infinity,
-                      height: 80,
-                      child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
-                        , image: imgUrl,fit: BoxFit.fill,),
+                      Container(
+                        width: double.infinity,
+                        height: 80,
+                        child: FadeInImage.assetNetwork(placeholder:'assets/images/default_place_holder.png'
+                          , image: imgUrl,fit: BoxFit.fill,),
 
-                    )
-                    ,Positioned(child: Container(
+                      )
+                      ,Positioned(child: Container(
 
-                      decoration: BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(8.0)
+                        decoration: BoxDecoration(
+                            color: Colors.black54,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(8.0)
+                        ),
+
+                        child: Center(child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                          child: Text(duration,style: TextStyle(color: Colors.white,fontSize: 15),),
+                        )),
+                      ),left: 5,bottom: 5,)
+                    ] ,
+                  ),
+                ),
+
+              ),
+
+            ),
+            Expanded(
+              flex: 3,
+              child:Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 10, 20),
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0.0),
+                        child: Text(title,style: TextStyle(color: Colors.black,fontSize: 18),
+                          maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(chords,style: TextStyle(color: Color(0xff058377),
+                            fontSize: 18),maxLines: 1,overflow: TextOverflow.clip,softWrap: true,),
                       ),
 
-                      child: Center(child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
-                        child: Text(duration,style: TextStyle(color: Colors.white,fontSize: 15),),
-                      )),
-                    ),left: 5,bottom: 5,)
-                  ] ,
+                    ],
+                  ),
+
                 ),
               ),
-
             ),
+          ],
+        ),
+        onTap: (){
 
-          ),
-          Expanded(
-            flex: 3,
-            child:Padding(
-              padding: const EdgeInsets.fromLTRB(0, 8, 10, 20),
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children:[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 0.0),
-                      child: Text(title,style: TextStyle(color: Colors.black,fontSize: 18),
-                        maxLines: 2,overflow: TextOverflow.ellipsis,softWrap: true,),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(chords,style: TextStyle(color: Color(0xff058377),
-                          fontSize: 18),maxLines: 1,overflow: TextOverflow.clip,softWrap: true,),
-                    ),
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+              PlayerScreen(videoId:item.itemId.videoId
+                ,thumbnailUrl: item.snippet.thumbnails.default_.url,title: title,),
+          ));
 
-                  ],
-                ),
-
-              ),
-            ),
-          ),
-        ],
+        },
       ),
-      onTap: (){
-
-        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-            PlayerScreen(videoId:item.itemId.videoId
-              ,thumbnailUrl: item.snippet.thumbnails.default_.url,title: title,),
-        ));
-
-      },
     );
   }
 

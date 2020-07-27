@@ -26,6 +26,9 @@ dependencies:
   http: ^0.12.1
   youtube_player_flutter: ^6.1.1
   carousel_slider: ^2.0.0
+  #firebase_core: ^0.4.0+9
+  #firebase_analytics: ^5.0.2
+  #firebase_admob: ^0.9.0+7
   #flutter_spinkit: ^2.1.0
 
 dev_dependencies:
@@ -47,6 +50,9 @@ flutter:
   assets:
     - assets/images/
     - assets/images/guitar/
+    - assets/images/piano/
+    - assets/images/mandolin/
+    - assets/images/ukulele/
 
   fonts:
     - family: Play

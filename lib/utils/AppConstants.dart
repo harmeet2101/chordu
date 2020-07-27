@@ -10,5 +10,11 @@ class AppConstants{
   static final String HOME_PAGE_DESC_TEXT_4 = 'Made with love and passion of music';
   static final String HOME_PAGE_DESC_TEXT_5 = 'All contents are subject to copyright, provided for educational and  personal noncommercial use only.';
   static final int SPLASH_DELAY_DURATION = 1500;
+  static final String DIALOG_LOGIN_HEADING = 'Login to ChordU';
+  static final String DIALOG_LOGIN_GOOGLE_HEADING = 'Sign in with Google';
+  static final String DIALOG_LOGIN_FACEBOOK_HEADING = 'Continue with Facebook';
+  static final String DIALOG_TUNING_HEADING = 'Tune Chords';
+
+  static String BASE_URL;
 
 }

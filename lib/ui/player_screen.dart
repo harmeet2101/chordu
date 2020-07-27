@@ -4,7 +4,8 @@ import 'dart:collection';
 import 'dart:convert';
 import 'package:chordu/rest/chord_details.dart';
 import 'package:chordu/rest/chord_info.dart';
-import 'file:///D:/softwares/ChordU_app_flutter/chordu/lib/ui/progressbars/custom_progress_bar_model.dart';
+import 'package:chordu/ui/dialogs/tune_cords_dialog.dart';
+import 'package:chordu/ui/full_chord_grid.dart';
 import 'package:chordu/ui/pages/diagram_slider_pageview.dart';
 import 'package:chordu/ui/pages/transpose_box.dart';
 import 'package:chordu/utils/AppConstants.dart';
@@ -16,6 +17,8 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'chord_app_details.dart';
 import 'chord_grid_widget.dart';
+import 'dialogs/login_dialog.dart';
+import 'progressbars/custom_progress_bar_model.dart';
 
 
 class PlayerScreen extends StatefulWidget{
@@ -41,18 +44,29 @@ class PlayerScreenState extends State<PlayerScreen> {
   bool _isPlayerReady = false;
   String timeElapsed = '0:00';
   double _percentage = 0.0;
-  bool selectGuitar = true,selectPiano=false,selectMandolin = false,
-      selectUkulele= false;
+  double _Progresspercentage = 0.0;
+  bool selectGuitar = true,selectPiano=false, selectMandolin = false,
+  selectUkulele= false;
   bool isExpanded = false;
+  var selectedInstrument = 0;
   Future<ChordDetails> _chordDetails;
   List<ChordInfo> chordsInfoList = new List();
   bool _isLoading = true;
+  bool _isPlaying = false;
   bool _isDiagramTabSelected = true;
   bool _isChordTabSelected = false;
   bool _isSimpleChordTabSelected = true;
   bool _isAdvChordTabSelected = false;
   bool _showFirst = true;
-  PageController _pagecontroller;
+  var chordsKeyList = new List<int>();
+  var chordsValueList = new List<String>();
+  String block_0='',block_1='',block_2='',
+      currentBlock='',block_4='',block_5='',block_6='';
+  int dotSize_6=0,dotSize_5=0,dotSize_4=0,dotSize_2=0,dotSize_1=0,dotSize_0=0;
+  int currentKey =0;
+  int progressTotal =0;
+  double progressPercentage =0.0;
+  bool isFirstTime=true;
   @override
   void initState(){
     _controller = YoutubePlayerController
@@ -65,7 +79,7 @@ class PlayerScreenState extends State<PlayerScreen> {
             loop: false,
             forceHD: false,
             disableDragSeek: false,
-            enableCaption: true,
+            enableCaption: false,
         )
     )..addListener(listener);
     _seekToController = TextEditingController();
@@ -74,25 +88,192 @@ class PlayerScreenState extends State<PlayerScreen> {
     super.initState();
     _chordDetails = getChordDetails(widget.videoId);
 
-    _pagecontroller = PageController(initialPage: 0);
   }
 
   void listener() {
     if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
-      setState(() {
+      /*setState(() {
         _playerState = _controller.value.playerState;
         _videoMetaData = _controller.metadata;
-      });
+      });*/
+
+      _playerState = _controller.value.playerState;
+      _videoMetaData = _controller.metadata;
+
+     // print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+
+    //  setTimeInterval();
     }
     if(_controller.value.isPlaying){
 
-      setState(() {
+      _isLoading = false;
+      _isPlaying = true;
+      timeElapsed = CommonUtils.convertTime(_controller.value.position.inMilliseconds);
+      _Progresspercentage = (_controller.value.position.inMilliseconds /
+          _controller.metadata.duration.inMilliseconds);
+     /* setState(() {
         _isLoading = false;
+        _isPlaying = true;
         timeElapsed = CommonUtils.convertTime(_controller.value.position.inMilliseconds);
-      });
+        _Progresspercentage = (_controller.value.position.inMilliseconds /
+            _controller.metadata.duration.inMilliseconds);
+
+      });*/
+
+      if(isFirstTime){
+        /*setState(() {
+          isFirstTime = false;
+          temp01();
+        });*/
+        isFirstTime = false;
+        temp01();
+      }
+    // await temp01();
+
+    }
+    if(!_controller.value.isPlaying){
+
+      _isPlaying = false;
+      isFirstTime = true;
+     // print('Not playing');
+     /* setState(() {
+        _isPlaying = false;
+        isFirstTime = true;
+      });*/
     }
   }
+  int counter=0;
+  void temp01()async{
 
+    int delay=0;
+
+      if(chordsKeyList.isNotEmpty && chordsValueList.isNotEmpty){
+
+        while(counter < chordsValueList.length && _isPlaying){
+
+         //  progressTotal =0;
+        //  progressPercentage =0.0;
+          setState(() {
+            currentBlock = chordsValueList[counter];
+            currentKey = chordsKeyList[counter];
+            if((counter-3)<0){
+              block_0 = "";
+              dotSize_0=0;
+            }else{
+              block_0 = chordsValueList[counter-3];
+              dotSize_0 = chordsKeyList[counter-2] - chordsKeyList[counter-3];
+            }
+            if((counter-2)<0){
+              block_1 = "";
+              dotSize_1=0;
+            }else{
+              block_1 = chordsValueList[counter-2];
+              dotSize_1 = chordsKeyList[counter-1]-chordsKeyList[counter-2];
+            }
+            if((counter-1)<0){
+              block_2 = "";
+              dotSize_2=0;
+            }else{
+              block_2 = chordsValueList[counter-1];
+              dotSize_2 = chordsKeyList[counter]-chordsKeyList[counter-1];
+            }
+
+            if(!(counter+1>chordsValueList.length-1)){
+              block_4 = chordsValueList[counter+1];
+
+              if(!(counter+2>chordsKeyList.length-1)){
+
+                dotSize_4 = chordsKeyList[counter+2]-chordsKeyList[counter+1];
+              }else{
+                dotSize_4 = 0;
+              }
+
+            }else{
+              block_4 = "";
+            }
+            if(!(counter+2>chordsValueList.length-1)){
+              block_5 = chordsValueList[counter+2];
+
+              if(!(counter+3>chordsKeyList.length-1)){
+
+                dotSize_5 = chordsKeyList[counter+3]-chordsKeyList[counter+2];
+              }else{
+                dotSize_5 = 0;
+              }
+            }else{
+              block_5 = "";
+            }
+            if(!(counter+3>chordsValueList.length-1)){
+              block_6 = chordsValueList[counter+3];
+
+              if(!(counter+4>chordsKeyList.length-1)){
+
+                dotSize_6 = chordsKeyList[counter+4]-chordsKeyList[counter+3];
+              }else{
+                dotSize_6 = 0;
+              }
+
+            }else{
+              block_6 = "";
+
+            }
+          });
+
+      /*    print("count: $counter");
+          print("block_0: "+block_0+ " :dots: ${dotSize_0}");
+          print("block_1: "+block_1+ " :dots: $dotSize_1");
+          print("block_2: "+block_2+ " :dots: $dotSize_2");
+          print("current_block: $currentBlock");
+          print("block_4: "+block_4+ " :dots: $dotSize_4");
+          print("block_5: "+block_5+ " :dots: $dotSize_5");
+          print("block_6: "+block_6 + " :dots: $dotSize_6");*/
+
+
+
+          if(counter==0){
+            delay = chordsKeyList[counter] * 370;
+            //progressTotal = chordsKeyList[counter];
+          }else if(!(counter+1>chordsKeyList.length-1)){
+            delay = (chordsKeyList[counter+1]-chordsKeyList[counter]) *370;
+          //  progressTotal = (chordsKeyList[counter+1]-chordsKeyList[counter]);
+          }
+
+          /*progressPercentage =  (1/progressTotal);
+          while(progressPercentage<1.1){
+
+            print(" progress: $progressPercentage");
+            await new Future.delayed(Duration(milliseconds : (progressPercentage * 10).round()));
+            setState(() {
+              progressPercentage +=(1/progressTotal);
+            //
+            });
+
+          }*/
+
+          await new Future.delayed(Duration(milliseconds : delay));
+
+        //  print("############# $delay ##################");
+
+          counter++;
+        }
+      }
+
+
+
+  }
+
+  var testCount=0;
+  void setTimeInterval()async{
+
+    //var currentBlock = 0;
+    var playerCurrentTime = (_controller.value.position.inMilliseconds)/0.4;
+    var currentBlock = playerCurrentTime.ceil() + 1;
+    await new Future.delayed(const Duration(seconds : 5));
+    testCount++;
+    print("#### $testCount #####: current time:  ${playerCurrentTime} "
+        "currentBlock: ${currentBlock}");
+
+  }
 
 
   @override
@@ -106,6 +287,7 @@ class PlayerScreenState extends State<PlayerScreen> {
         height: MediaQuery.of(context).size.height,
         child: Stack(
           children: _buildForm(context),
+
         ),
       ),
     );
@@ -156,15 +338,13 @@ class PlayerScreenState extends State<PlayerScreen> {
               child:Container(
                 child: Column(
                   children: <Widget>[
-
                     getHeading('Chords for ${widget.title}'),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 0),
                       child: Container(
                         width: double.maxFinite,
                         height: MediaQuery.of(context).size.height*0.5,
-                        child: YoutubePlayer(
-                          aspectRatio: 16/9,
+                        child:  YoutubePlayer(
                           thumbnailUrl: widget.thumbnailUrl,
                           controller: _controller,
                           onEnded: (value){
@@ -176,8 +356,10 @@ class PlayerScreenState extends State<PlayerScreen> {
                             });
                           },
                           onReady: (){
-                            print('player ready');
-                            _isPlayerReady = true;
+                            setState(() {
+                              print('player ready');
+                              _isPlayerReady = true;
+                            });
                           },
 
                         ),
@@ -187,7 +369,7 @@ class PlayerScreenState extends State<PlayerScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                       TabView01(context),
+                        TabView01(context),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0,0, 10, 5),
                           child: Text('$timeElapsed',style: TextStyle(fontSize: 26,
@@ -198,9 +380,12 @@ class PlayerScreenState extends State<PlayerScreen> {
 
                     _isDiagramTabSelected?Padding(
                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                      child: DiagramSliderWidget(),
+                      child: DiagramSliderWidget(selectedInstrumentType: selectedInstrument,
+                        chordsInfoList: chordsInfoList,counter: counter,),
                     ):
-                    ChordsGridWidget(chordsInfoList:chordsInfoList,isExpanded:true),
+                    new FullChordGridView(chordsInfoList: chordsInfoList,
+                      counter: counter,currentblock: currentBlock,
+                      currentKey: currentKey,),
 
                     _isDiagramTabSelected?Padding(
                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
@@ -210,12 +395,13 @@ class PlayerScreenState extends State<PlayerScreen> {
                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                       child: instrumentRow(),
                     ):Container(),
-                    _isDiagramTabSelected?TransposeWidget(showFirst: _showFirst,)
+                    _isDiagramTabSelected?TransposeWidget(showFirst: _showFirst,
+                      isTuneDialog: false,)
                         :Container(),
                     _isDiagramTabSelected?Padding(
                       padding: const EdgeInsets.fromLTRB(0, 10, 0,10),
                       child: ChordsGridWidget(chordsInfoList:chordsInfoList,
-                        isExpanded: false,),
+                        isExpanded: false,type: '',),
                     ):Container(),
 
                   ],
@@ -226,7 +412,6 @@ class PlayerScreenState extends State<PlayerScreen> {
           ],
 
         ),
-
         Positioned(child: playerControls(),bottom: 0.0,),
       ],
 
@@ -304,21 +489,25 @@ class PlayerScreenState extends State<PlayerScreen> {
               selectPiano = false;
               selectUkulele = false;
               selectMandolin = false;
+              selectedInstrument = 0;
             }else if(instrumentName == 'Piano'){
               selectGuitar = false;
               selectPiano = true;
               selectUkulele = false;
               selectMandolin = false;
+              selectedInstrument = 1;
             }else if(instrumentName == 'Ukulele'){
               selectGuitar = false;
               selectPiano = false;
               selectUkulele = true;
               selectMandolin = false;
+              selectedInstrument = 2;
             }else{
               selectGuitar = false;
               selectPiano = false;
               selectUkulele = false;
               selectMandolin = true;
+              selectedInstrument = 3;
             }
           });
 
@@ -348,23 +537,31 @@ class PlayerScreenState extends State<PlayerScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  cordsContainer('F',60,60),
+                  cordsContainer(block_1,60,60,false,dotSize_1),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
-                    child: cordsContainer('Am',60,60),
+                    child: cordsContainer(block_2,60,60,false,dotSize_2),
                   ),
                   Expanded(
-                    child:cordsContainer('C',80,60),
+                    child:currentCordContainer(currentBlock,80,60,true,0),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
-                    child: cordsContainer('Bb',60,60),
+                    child: cordsContainer(block_4,60,60,false,dotSize_4),
                   ),
-                  cordsContainer('Fm',60,60),
+                  cordsContainer(block_5,60,60,false,dotSize_5),
                 ],
               ),
             ),
           ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 2,
+            child: LinearProgressIndicator(
+            value: _Progresspercentage,
+            valueColor: new AlwaysStoppedAnimation<Color>(Color(0xff01AE6D)),  // 068C59
+            backgroundColor: Colors.black87,
+          ),),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [Color(0xff222727),Color(0xff252B2C),Color(0xff1E2121)],
@@ -379,14 +576,16 @@ class PlayerScreenState extends State<PlayerScreen> {
                     child: Center(child: IconButton(icon: Icon(Icons.favorite,color: Color(0xffA17465),size: 36,),)),
                   ),),
                 onTap: (){
+                  showDialog(context: context,builder: (context){
 
-                    setState(() {
+                    return AlertDialog(
+                      actions: <Widget>[
 
-                      _percentage +=10;
-                      if(_percentage>100.00){
-                        _percentage = 0.0;
-                      }
-                    });
+                      ],content: LoginDialog(),
+                      backgroundColor: Colors.transparent,
+                      insetPadding: EdgeInsets.only(left: 5,right: 5),
+                    );
+                  });
                 },),
                 InkWell(
                   child: Container(child: Padding(
@@ -407,7 +606,8 @@ class PlayerScreenState extends State<PlayerScreen> {
                 },
                 ),
                 InkWell(
-                  child: Container(child:Align(child: IconButton(icon: Icon(_controller.value.isPlaying?Icons.pause_circle_filled:Icons.play_circle_filled,
+                  child: Container(child:Align(child:
+                  IconButton(icon: Icon(_controller.value.isPlaying?Icons.pause_circle_filled:Icons.play_circle_filled,
                     color: Color(0xffA5A5A5),size: 36,),
                     alignment: Alignment.topLeft,),),
                     ),onTap: _isPlayerReady?(){
@@ -450,7 +650,18 @@ class PlayerScreenState extends State<PlayerScreen> {
                     child: Center(child: IconButton(icon: Icon(Icons.equalizer,color: Color(0xffBBD7D5),size: 36,),
                         )),
                   ),),
-                  onTap: (){},
+                  onTap: (){
+                    showDialog(context: context,builder: (context){
+
+                      return AlertDialog(
+                        actions: <Widget>[
+
+                        ],content: TuneChordsDialog(),
+                        backgroundColor: Colors.transparent,
+                        insetPadding: EdgeInsets.only(left: 5,right: 5),
+                      );
+                    });
+                  },
                 ),
 
               ],
@@ -637,17 +848,25 @@ class PlayerScreenState extends State<PlayerScreen> {
   void dispose() {
     _controller.dispose();
     _seekToController.dispose();
-    _pagecontroller.dispose();
     super.dispose();
   }
 
-  Widget cordsContainer(String text,double _width,double _height) {
+  Widget cordsContainer(String text,double _width,double _height,bool currentBlock,int count) {
 
     return  Container(
         width: _width,
         height: _height,
         child:
-        Center(child: Text(text,style: TextStyle(fontSize: 24,color: Color(0xffD48A31)),),),
+        Column(children: <Widget>[
+          Spacer(flex: 1,),
+          Text(text,style: TextStyle(fontSize: 24,color: Color(0xffD48A31)),),
+          Spacer(flex: 1,),
+         !currentBlock?Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 4),
+            child: chordDotsRowWidget(count),
+          ):Container(),
+
+        ],mainAxisAlignment: MainAxisAlignment.spaceBetween,),
         decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             color: Color(0xff222727),
@@ -655,6 +874,75 @@ class PlayerScreenState extends State<PlayerScreen> {
             borderRadius: BorderRadius.circular(10.0)
         ),
       );
+  }
+  Widget currentCordContainer(String text,double _width,double _height,bool currentBlock,int count) {
+
+    return  Container(
+        width: _width,
+        height: _height,
+        child:
+        Stack(
+          children: <Widget>[
+
+            Container(
+
+              height: _height,
+              child: LinearProgressIndicator(
+                value: progressPercentage,
+                valueColor: new AlwaysStoppedAnimation<Color>(Color(0xff058377)),  // 068C59
+                backgroundColor: Colors.black87,
+              ),
+                decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    color: Colors.transparent,
+                    border: Border.all(width: 0.8,color: Colors.transparent),
+                    borderRadius: BorderRadius.circular(20.0)
+                )
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Column(children: <Widget>[
+                Spacer(flex: 1,),
+                Text(text,style: TextStyle(fontSize: 24,color: Color(0xffD48A31)),),
+                Spacer(flex: 1,),
+
+              ],mainAxisAlignment: MainAxisAlignment.spaceBetween,),
+            )
+          ],
+        ),
+        decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: Color(0xff222727),
+            border: Border.all(width: 0.8,color: Colors.white60),
+            borderRadius: BorderRadius.circular(10.0)
+        ),
+      );
+  }
+
+  Widget chordDotsRowWidget(int count){
+    if(count>0){
+      return
+         Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: chordsDotsWidget(count)
+
+      );
+    }else{
+      return Container();
+    }
+  }
+
+  List<Widget> chordsDotsWidget(int count){
+
+    var ls = new List<Widget>();
+    for(int i=0;i<count;i++)
+    ls.add(Expanded(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+        child:Container(height: 2.0,color: Colors.white),
+      ),
+    ));
+    return ls;
   }
 
 
@@ -686,7 +974,10 @@ class PlayerScreenState extends State<PlayerScreen> {
       for(int i =1;i<=ls.length;i++){
         var temp = ls[i-1].split(":");
         var key = temp[0].substring(1,temp[0].length-1);
-        map.putIfAbsent(key, () => temp[1].substring(1,temp[1].length-1));
+        chordsKeyList.add(int.parse(key));
+        var value = temp[1].substring(1,temp[1].length-1);
+        chordsValueList.add(value);
+        map.putIfAbsent(key, () => value);
         size = int.parse(key);
       }
 
@@ -696,15 +987,12 @@ class PlayerScreenState extends State<PlayerScreen> {
 
 
           if(map.containsKey("$i")){
-         //   print('{ bloc: $i, value: ${map["$i"]}');
             chordsInfoList.add(new ChordInfo(location: i,text:map["$i"],isActive: true ));
           }else{
-           // print('{ bloc: $i, value: NA');
             chordsInfoList.add(new ChordInfo(location: i,text:'',isActive: false ));
           }
         }
       });
-
       return res;
     }
     else
@@ -724,4 +1012,6 @@ class PlayerScreenState extends State<PlayerScreen> {
       _showFirst = true;
     });
   }
+
 }
+

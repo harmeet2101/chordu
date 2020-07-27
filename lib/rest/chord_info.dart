@@ -4,11 +4,13 @@ class ChordInfo{
   final String text;
   final bool isActive;
 
+
   ChordInfo({this.location,this.text,this.isActive});
 
   @override
   String toString() {
-    return 'ChordInfo{text: $text, isActive: $isActive}';
+    return 'ChordInfo{location: $location, text: $text, isActive: $isActive}';
   }
+
 
 }

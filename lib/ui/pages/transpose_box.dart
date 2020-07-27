@@ -1,12 +1,13 @@
 import 'package:chordu/ui/progressbars/spinning_progress_view.dart';
+import 'package:chordu/utils/AppConstants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TransposeWidget extends StatefulWidget{
 
   bool showFirst;
-
-  TransposeWidget({@required this.showFirst});
+  bool isTuneDialog;
+  TransposeWidget({@required this.showFirst,@required this.isTuneDialog});
 
   @override
   State<StatefulWidget> createState() {
@@ -36,7 +37,23 @@ class TransposeState extends State<TransposeWidget>{
           duration: Duration(milliseconds: 200),
           firstChild: Column(
             children: <Widget>[
+              widget.isTuneDialog?GestureDetector(
+                onTap: (){},
+                child: Container(
+                  width: 250,
+                  height: 50,
+                  child: Center(child: Text(AppConstants.DIALOG_TUNING_HEADING,
+                    style: TextStyle(color: Colors.white,fontSize: 22.0,decoration: TextDecoration.none),),
+                  ),
+                  decoration:BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(color: Colors.white60,width: 0.5)
+                  ) ,
+                ),
 
+              ):Container(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
                 child: Row(

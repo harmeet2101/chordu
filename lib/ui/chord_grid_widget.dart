@@ -1,13 +1,14 @@
 import 'package:chordu/rest/chord_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:chordu/ui/custom_player_screen.dart';
 class ChordsGridWidget extends StatefulWidget{
 
   bool isExpanded = false;
   List<ChordInfo> chordsInfoList = new List();
+  String type;
 
-  ChordsGridWidget({this.chordsInfoList,this.isExpanded});
+  ChordsGridWidget({this.chordsInfoList,this.isExpanded,this.type});
 
   @override
   State<StatefulWidget> createState() {
@@ -18,6 +19,8 @@ class ChordsGridWidget extends StatefulWidget{
 
 class ChordsGridState extends State<ChordsGridWidget>{
 
+  //PlayerScreenState playerScreenState = null;
+  bool isGridExpanded = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -27,7 +30,8 @@ class ChordsGridState extends State<ChordsGridWidget>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return !widget.isExpanded?Container(
+    //playerScreenState = PlayerScreenState.of(context);
+    return (isGridExpanded)?gridView():Container(
       width: MediaQuery.of(context).size.width-20,
       height: 250,
       decoration: BoxDecoration(
@@ -62,14 +66,14 @@ class ChordsGridState extends State<ChordsGridWidget>{
             onTap: (){
 
               setState(() {
-                widget.isExpanded = !widget.isExpanded;
+                isGridExpanded = !isGridExpanded    ;
               });
             },
           ),
               bottom: 0.0)
         ],
       ),
-    ):gridView();
+    );
   }
 
 
@@ -79,7 +83,7 @@ class ChordsGridState extends State<ChordsGridWidget>{
         padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
         child: GridView.count(
           primary: false,
-          physics: !widget.isExpanded?NeverScrollableScrollPhysics():ClampingScrollPhysics(),
+          physics: !isGridExpanded?NeverScrollableScrollPhysics():ClampingScrollPhysics(),
           padding: const EdgeInsets.all(5),
           shrinkWrap: true,
           crossAxisSpacing: 5,

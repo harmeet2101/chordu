@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "782267228686",
+    "firebase_url": "https://chordu-9990b.firebaseio.com",
+    "project_id": "chordu-9990b",
+    "storage_bucket": "chordu-9990b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782267228686:android:701253ddf0c2c0cf69925f",
+        "android_client_info": {
+          "package_name": "com.example.chordu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782267228686-q52g4u2qf1aedtn9tudsoqgdsdu7lsp9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBECMTFWq2MDFsygJb7tcJofOHktQAda4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782267228686-q52g4u2qf1aedtn9tudsoqgdsdu7lsp9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -17,7 +17,7 @@ class CommonUtils{
     }*/
 
 
-    return '${minutes>10?minutes:0}:${seconds}';
+    return '${minutes<=9?'0${minutes}':minutes}:${seconds<=9?'0${seconds}':seconds}';
 
   }
 }

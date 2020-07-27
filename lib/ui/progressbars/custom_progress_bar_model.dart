@@ -94,8 +94,9 @@ class ProgressBarModelState extends State<ProgressBarModel> with TickerProviderS
   @override
   void dispose() {
     // TODO: implement dispose
-    super.dispose();
+
     animationController01.dispose();
+    super.dispose();
   }
 }
 
