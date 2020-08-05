@@ -8,7 +8,9 @@ import 'package:chordu/rest/youtube/youtube_search_response.dart';
 //import 'package:chordu/ui/custom_player_screen.dart';
 import 'package:chordu/ui/player_screen.dart';
 import 'package:chordu/ui/progressbars/spin_fade_circle_view.dart';
+import 'package:chordu/ui/youtube/yt_main_screen.dart';
 import 'package:chordu/ui/youtube/yt_player_screen.dart';
+import 'package:chordu/ui/youtube/yt_player_screen_1.dart';
 import 'package:chordu/utils/AppConstants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -230,9 +232,10 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           onTap: (){
             Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                PlayerScreen(videoId:id
-                  ,thumbnailUrl: imgUrl,title: title,)
-            /*YTPlayerScreen(videoId: id,thumbnailUrl: imgUrl,songTitle: title,)*/
+                /*PlayerScreen(videoId:id
+                  ,thumbnailUrl: imgUrl,title: title,)*/
+            YTPlayerScreen1(videoId: id,thumbnailUrl: imgUrl,
+              title: title,)
                 ));
           }
       ),

@@ -1,3 +1,4 @@
+import 'package:chordu/blocs/yt_controller_bloc.dart';
 import 'package:chordu/ui/custom_player_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,12 @@ class FirstTabViewState extends State<FirstTabView>{
 
  PlayerScreenState playerScreenState = null;
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +106,7 @@ class FirstTabViewState extends State<FirstTabView>{
               padding: const EdgeInsets.all(10.0),
               child: Text(text,style: TextStyle(fontSize: 18,
                   color: playerScreenState.isChordTabSelected?Colors.white70:Colors.white),),
-            ),
-            playerScreenState.isChordTabSelected?Container(width:80,height: 2,color:Colors.green,):new Container(),
+            ), playerScreenState.isChordTabSelected?Container(width:80,height: 2,color:Colors.green,):new Container(),
           ],
         ),
         decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:chordu/rest/chord_info.dart';
+import 'package:chordu/ui/full_chord_grid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chordu/ui/custom_player_screen.dart';
@@ -31,7 +32,7 @@ class ChordsGridState extends State<ChordsGridWidget>{
   Widget build(BuildContext context) {
     // TODO: implement build
     //playerScreenState = PlayerScreenState.of(context);
-    return (isGridExpanded)?gridView():Container(
+    return (isGridExpanded)?FullChordGridView(chordsInfoList: widget.chordsInfoList,):Container(
       width: MediaQuery.of(context).size.width-20,
       height: 250,
       decoration: BoxDecoration(

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:chordu/blocs/app_bloc.dart';
+import 'package:chordu/blocs/bloc_provider.dart';
 import 'package:chordu/ui/home_screen.dart';
 import 'package:chordu/utils/AppConstants.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,29 +14,32 @@ class ChorduApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        // This is the theme of your application.
+    return BlocProvider(
+      bloc: AppBloc(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          // This is the theme of your application.
 
-        /*
-        *  Theme colors: #093431, #058377
-            Background colors: #252525, white
-            Font colors: #777, #fafafa, white
-        * */
+          /*
+          *  Theme colors: #093431, #058377
+              Background colors: #252525, white
+              Font colors: #777, #fafafa, white
+          * */
 
-        primaryColor: Color(0xff058377),
-        accentColor: Colors.white,
-        fontFamily: 'Play',
-        textTheme: TextTheme(
-          title: TextStyle(color: Colors.white,fontSize: 22.0),
-        )
+          primaryColor: Color(0xff058377),
+          accentColor: Colors.white,
+          fontFamily: 'Play',
+          textTheme: TextTheme(
+            title: TextStyle(color: Colors.white,fontSize: 22.0),
+          )
+        ),
+        home: SplashScreenPage(title:AppConstants.APP_NAME),
+        routes: <String,WidgetBuilder>{
+
+          "/home":(BuildContext)=>HomeScreen()
+        },
       ),
-      home: SplashScreenPage(title:AppConstants.APP_NAME),
-      routes: <String,WidgetBuilder>{
-
-        "/home":(BuildContext)=>HomeScreen()
-      },
     );
   }
 }

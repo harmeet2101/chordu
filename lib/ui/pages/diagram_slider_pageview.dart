@@ -1,4 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:chordu/blocs/app_bloc.dart';
+import 'package:chordu/blocs/bloc_provider.dart';
+import 'package:chordu/blocs/yt_controller_bloc.dart';
 import 'package:chordu/rest/chord_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +26,13 @@ class DiagramSliderState extends State<DiagramSliderWidget>{
   var imgsList = new List<String>();
   var textList = new List<String>();
 
+  YTPControllerBloc _ytpControllerBloc;
   CarouselController _carouselController= CarouselController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _ytpControllerBloc = BlocProvider.of<AppBloc>(context).ytpControllerBloc;
 
   }
 
@@ -77,63 +82,53 @@ class DiagramSliderState extends State<DiagramSliderWidget>{
       }
 
   }
-
-  void moveToLoc(){
-    _carouselController.animateToPage(widget.counter,
+  int count =0;
+  void moveToLoc(int count){
+    _carouselController.animateToPage(count,
         duration: Duration(milliseconds: 300));
   }
 
   Widget getDiagramSliderItems(BuildContext buildContext){
-    WidgetsBinding.instance.addPostFrameCallback((_) => moveToLoc());
-    return Column(
+
+    return  Column(
       children: <Widget>[
-        Container(
-          color:Color(0xff505152),
-          height: 250,
-          child: CarouselSlider(
-            carouselController: _carouselController,
-            options:  CarouselOptions(
-              autoPlay: false,
-              reverse: false,
-              enlargeCenterPage: true,
-              viewportFraction: 0.4,
-              aspectRatio: 2.0,
-              initialPage: 1,
-              autoPlayCurve: Curves.linear,
-              
-
-            ),
-            items: getSliderItems()/*imgsList.map((e) => Container(
-
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  shape:BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: Column(
-
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('C',style: TextStyle(color: Colors.black,
-                          fontSize: 28,fontWeight: FontWeight.bold),),
-                    ),
-                    Expanded(child: Image.asset(e,fit: BoxFit.fill,)),
-                  ],
-                )
-            )).toList()*/,
-          ),
+        StreamBuilder<int>(
+          stream: _ytpControllerBloc.counterStream,
+          builder: (context, snapshot) {
+            if(snapshot.hasData){
+              WidgetsBinding.instance.addPostFrameCallback((_) => moveToLoc(snapshot.data));
+            return temp();
+            }
+            else return temp();
+          }
         ),
-        /*RaisedButton(
-          color: Colors.red,
-          onPressed: (){
-            moveToLoc();
-          },child: Text('Next',style: TextStyle(fontSize: 16,color: Colors.white),),
-        ),*/
       ],
     );
+
   }
 
+
+  Widget temp(){
+    return Container(
+      color:Color(0xff505152),
+      height: 250,
+      child: CarouselSlider(
+        carouselController: _carouselController,
+        options:  CarouselOptions(
+          autoPlay: false,
+          reverse: false,
+          enlargeCenterPage: true,
+          viewportFraction: 0.4,
+          aspectRatio: 2.0,
+          initialPage:0,
+          autoPlayCurve: Curves.linear,
+
+
+        ),
+        items: getSliderItems(),
+      ),
+    );
+  }
   List<Widget> getSliderItems(){
 
     List<Widget> ls = new List();
