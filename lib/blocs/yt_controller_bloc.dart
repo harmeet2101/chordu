@@ -127,7 +127,7 @@ class YTPControllerBloc extends Bloc{
 
     volumeStreamControllerSink.add(_muted);
     timeElapsedSink.add(timeElapsed);
-    progressPercentSink.add(_Progresspercentage);
+  //  progressPercentSink.add(_Progresspercentage);
 
     counterStreamController = new StreamController<int>.broadcast();
 

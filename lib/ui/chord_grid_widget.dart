@@ -8,8 +8,8 @@ class ChordsGridWidget extends StatefulWidget{
   bool isExpanded = false;
   List<ChordInfo> chordsInfoList = new List();
   String type;
-
-  ChordsGridWidget({this.chordsInfoList,this.isExpanded,this.type});
+  Function showGridControls;
+  ChordsGridWidget({this.chordsInfoList,this.isExpanded,this.type,this.showGridControls});
 
   @override
   State<StatefulWidget> createState() {
@@ -66,8 +66,9 @@ class ChordsGridState extends State<ChordsGridWidget>{
             ),
             onTap: (){
 
+              widget.showGridControls();
               setState(() {
-                isGridExpanded = !isGridExpanded    ;
+                isGridExpanded = !isGridExpanded;
               });
             },
           ),

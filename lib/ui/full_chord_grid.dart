@@ -88,18 +88,21 @@ class FullChordGridState extends State<FullChordGridView>{
   }
 
   Widget getGrid(int count){
-   return GridView.count(
-      primary: false,
-      physics: ClampingScrollPhysics(),
-      padding: const EdgeInsets.all(5),
-      shrinkWrap: true,
-      crossAxisSpacing: 5,
-      mainAxisSpacing: 5,
-      crossAxisCount: 6,
-      scrollDirection: Axis.vertical,
-      children: getChordsList(clrLimit),
+   return Padding(
+     padding: const EdgeInsets.all(20.0),
+     child: GridView.count(
+        primary: false,
+        physics: ClampingScrollPhysics(),
+        padding: const EdgeInsets.all(5),
+        shrinkWrap: true,
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 5,
+        crossAxisCount: 6,
+        scrollDirection: Axis.vertical,
+        children: getChordsList(clrLimit),
 
-    );
+      ),
+   );
   }
 
 

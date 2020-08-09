@@ -734,7 +734,7 @@ class CategoryBuilderState extends State<CategoryBuilder>{
         ),
         onTap: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-              PlayerScreen(videoId:id
+              YTPlayerScreen1(videoId:id
                 ,thumbnailUrl: imgUrl,title: title,),
           ));
 
@@ -940,7 +940,7 @@ class SearchBuilderState extends State<SearchBuilder>{
         onTap: (){
 
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-              PlayerScreen(videoId:item.itemId.videoId
+              YTPlayerScreen1(videoId:item.itemId.videoId
                 ,thumbnailUrl: item.snippet.thumbnails.default_.url,title: title,),
           ));
 

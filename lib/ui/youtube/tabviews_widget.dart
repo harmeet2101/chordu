@@ -11,6 +11,10 @@ import 'package:flutter/material.dart';
 import '../full_chord_grid.dart';
 class TabViewsWidget extends StatefulWidget{
 
+  final Function tabCallback;
+
+  TabViewsWidget({this.tabCallback});
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -59,6 +63,7 @@ class TabViewState extends State<TabViewsWidget>{
                     setState(() {
                       isDiagramTabSelected = true;
                       isChordTabSelected = false;
+                      widget.tabCallback(false);
                       //playerScreenState.isExpanded = false;
                     });
                   },
@@ -72,6 +77,7 @@ class TabViewState extends State<TabViewsWidget>{
                       setState(() {
                         isDiagramTabSelected = false;
                         isChordTabSelected = true;
+                        widget.tabCallback(true);
                       });
                     },
                     child: tab03('Chord Sheet'),
@@ -160,7 +166,7 @@ class TabViewState extends State<TabViewsWidget>{
           padding: const EdgeInsets.fromLTRB(0, 10, 0,10),
           child: ChordsGridWidget(chordsInfoList:BlocProvider.of<AppBloc>(context).
           chodDetailsBloc.chordsInfoList,
-            isExpanded: false,type: '',),
+            isExpanded: false,type: '',showGridControls: showGridControls,),
         ):Container(),
       ],
     );
@@ -255,7 +261,6 @@ class TabViewState extends State<TabViewsWidget>{
         ));
   }
 
-
   Widget instrumentRow(){
 
     return Row(
@@ -332,11 +337,6 @@ class TabViewState extends State<TabViewsWidget>{
   }
 
 
-
-
-
-
-
   animateDelay()async{
 
     var _duration = Duration(milliseconds: 5000);
@@ -348,5 +348,9 @@ class TabViewState extends State<TabViewsWidget>{
     setState(() {
       _showFirst = true;
     });
+  }
+
+  void showGridControls(){
+    widget.tabCallback(true);
   }
 }
