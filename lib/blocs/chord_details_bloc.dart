@@ -54,8 +54,10 @@ class ChordDetailsBloc extends Bloc{
     for(int i =1;i<=ls.length;i++){
       var temp = ls[i-1].split(":");
       var key = temp[0].substring(1,temp[0].length-1);
+
       chordsKeyList.add(int.parse(key));
       var value = temp[1].substring(1,temp[1].length-1);
+//      print('${}ls[i]');
       chordsValueList.add(value);
       map.putIfAbsent(key, () => value);
       size = int.parse(key);

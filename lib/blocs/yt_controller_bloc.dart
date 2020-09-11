@@ -163,6 +163,12 @@ class YTPControllerBloc extends Bloc{
       _Progresspercentage = (_youtubePlayerController.value.position.inMilliseconds /
           _youtubePlayerController.metadata.duration.inMilliseconds);
 
+     /* var currentBlock = 0;
+      var playerCurrentTime = _youtubePlayerController.value.position.inMilliseconds;
+      currentBlock =  (playerCurrentTime/0.4).ceil() + 1 ;//Math.ceil(playerCurrentTime / 0.4) + 1;
+
+      print('current blk: ${currentBlock} ${playerCurrentTime}');*/
+
       timeElapsedSink.add(timeElapsed);
       progressPercentSink.add(_Progresspercentage);
       videoPlayingStreamControllerSink.add(_isVideoPlaying);
@@ -227,6 +233,10 @@ class YTPControllerBloc extends Bloc{
 
     if(chordDetailsBloc?.chordsKeyList.isNotEmpty && chordDetailsBloc?.chordsValueList.isNotEmpty){
 
+      /*print('length: ${chordDetailsBloc.chordsValueList.length}');
+      for(int i = 0; i<chordDetailsBloc.chordsKeyList.length;i++){
+        print('key : ${chordDetailsBloc.chordsKeyList[i]}');
+      }*/
       while(counter < chordDetailsBloc.chordsValueList.length && _isVideoPlaying){
 
           currentBlock = chordDetailsBloc.chordsValueList[counter];
@@ -325,18 +335,19 @@ class YTPControllerBloc extends Bloc{
 
 
         if(counter==0){
-          delay = chordDetailsBloc.chordsKeyList[counter] * 370;
+          delay = chordDetailsBloc.chordsKeyList[counter] * 400;
           //progressTotal = chordsKeyList[counter];
         }else if(!(counter+1>chordDetailsBloc.chordsKeyList.length-1)){
           delay = (chordDetailsBloc.chordsKeyList[counter+1]-
-              chordDetailsBloc.chordsKeyList[counter]) *370;
+              chordDetailsBloc.chordsKeyList[counter]) *400;
 
         }
 
 
         await new Future.delayed(Duration(milliseconds : delay));
 
-        //  print("############# $delay ##################");
+          /*print("#############   ${(chordDetailsBloc.chordsKeyList[counter])} ${chordDetailsBloc.chordsKeyList[counter+1]} "
+              " $delay ##################");*/
 
         counter++;
       }

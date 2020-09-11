@@ -7,7 +7,7 @@ class ChordDetailsRepo{
 
 
   Future<ChordDetails> getChordDetails(String id)async{
-    var resp = await _apiProvider.getResponse('https://chordu.com/flutter_service_chords.php?tid=${id}');
+    var resp = await _apiProvider.getResponse('https://chordu.com/app-service-chords.php?tid=${id}');
     ChordDetails chordDetails = ChordDetails.fromJson(resp);
     return chordDetails;
   }
